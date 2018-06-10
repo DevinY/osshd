@@ -9,7 +9,6 @@ ARG user
 
 ENV OSSH_USER ${user:-git}
 
-#RUN apt-get update&&apt-get install -y openssh-server git pwgen
 RUN apk update&&apk add openssh git pwgen rsync
 
 
@@ -25,9 +24,7 @@ RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
-#RUN apt-get clean &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/${OSSH_USER} --gecos "User" ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd
 RUN adduser -D -s /bin/sh -h /home/${OSSH_USER} ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd > /dev/null 2>&1
 
 USER ${OSSH_USER}
@@ -40,7 +37,6 @@ RUN chmod 600 /home/${OSSH_USER}/.ssh/authorized_keys
 
 USER root
 
-#RUN apt-get -y --purge remove pwgen
 RUN apk del pwgen
 
 EXPOSE 22
