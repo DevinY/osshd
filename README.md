@@ -7,9 +7,9 @@
 例如: gogs + ossh + D-Laravel
 
 Build OpenSSH image to only with a public key.
-
+<pre>
 KEY=`cat ~/.ssh/id_rsa.pub`&&docker build --build-arg user="${USER}" --build-arg key="${KEY}" -t osshd .
-
+</pre>
 or 
 
 #default user is git.
