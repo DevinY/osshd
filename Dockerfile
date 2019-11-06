@@ -9,6 +9,14 @@ ARG user
 
 ENV OSSH_USER ${user:-git}
 
+ARG uid
+
+ENV OSSH_UID ${uid:-1000}
+
+ARG gid
+
+ENV OSSH_GID ${gid:-1000}
+
 RUN apk update&&apk add openssh git pwgen rsync
 
 
@@ -25,7 +33,7 @@ RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
 
-RUN adduser -D -s /bin/sh -h /home/${OSSH_USER} ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd > /dev/null 2>&1
+RUN adduser -D -u ${OSSH_UID} -g ${OSSH_GID} -s /bin/sh -h /home/${OSSH_USER} ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd > /dev/null 2>&1
 
 USER ${OSSH_USER}
 
