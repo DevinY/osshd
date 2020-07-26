@@ -1,13 +1,18 @@
 FROM ubuntu:12.04
-MAINTAINER Devin Yang <devin@ccc.tc> 
 
-ARG key
-
-ENV KEY ${key:-nokey}
+ARG DEBIAN_FRONTEND=noninteractive
 
 ARG user
 
 ENV OSSH_USER ${user:-git}
+
+ARG uid
+
+ENV OSSH_UID ${uid:-1000}
+
+ARG gid
+
+ENV OSSH_GID ${gid:-1000}
 
 RUN apt-get update&&apt-get install -y openssh-server git pwgen
 
@@ -22,17 +27,17 @@ RUN mkdir /root/.ssh
 
 RUN apt-get clean &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/${OSSH_USER} --gecos "User" ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd
+RUN addgroup --gid ${OSSH_GID} ${OSSH_USER}&&adduser --quiet --uid ${OSSH_UID} --gid ${OSSH_GID} --disabled-password --shell /bin/bash --home /home/${OSSH_USER} --gecos "OsshUser" ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd
 
 USER ${OSSH_USER}
 
 RUN mkdir -p /home/${OSSH_USER}/.ssh&&chmod 700 /home/${OSSH_USER}/.ssh
 
-RUN echo "${KEY}" > /home/${OSSH_USER}/.ssh/authorized_keys
-
-RUN chmod 600 /home/${OSSH_USER}/.ssh/authorized_keys
+COPY authorized_keys /home/${OSSH_USER}/.ssh/authorized_keys
 
 USER root
+
+RUN chown ${OSSH_UID}.${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
 
 RUN apt-get -y --purge remove pwgen
 

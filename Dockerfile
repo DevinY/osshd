@@ -1,9 +1,6 @@
 FROM alpine
-MAINTAINER Devin Yang <devin@ccc.tc> 
 
-ARG key
-
-ENV KEY ${key:-nokey}
+ARG DEBIAN_FRONTEND=noninteractive
 
 ARG user
 
@@ -19,8 +16,8 @@ ENV OSSH_GID ${gid:-1000}
 
 RUN apk update&&apk add openssh git pwgen rsync
 
-
 RUN mkdir /var/run/sshd
+
 RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
     sed -ri 's/#AuthorizedKeysFile/AuthorizedKeysFile/g' /etc/ssh/sshd_config && \
@@ -37,16 +34,14 @@ RUN adduser -D -u ${OSSH_UID} -g ${OSSH_GID} -s /bin/sh -h /home/${OSSH_USER} ${
 
 USER ${OSSH_USER}
 
-RUN mkdir -p /home/${OSSH_USER}/.ssh&&chmod 700 /home/${OSSH_USER}/.ssh
-
-RUN echo "${KEY}" > /home/${OSSH_USER}/.ssh/authorized_keys
-
-RUN chmod 600 /home/${OSSH_USER}/.ssh/authorized_keys
+COPY authorized_keys /home/${OSSH_USER}/.ssh/authorized_keys
 
 USER root
+
+RUN chown ${OSSH_UID}.${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
 
 RUN apk del pwgen
 
 EXPOSE 22
 
-CMD  ["/usr/sbin/sshd", "-D"]
+CMD    ["/usr/sbin/sshd", "-D"]
