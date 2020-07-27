@@ -21,7 +21,7 @@ docker run --rm --name ossh -dp 2222:22 ossh
 <pre>
 docker exec -ugit -ti ossh sh
 cd ~/.ssh
-echo <your_open_ssh_public_key> > authorized_keys
+echo "your_open_ssh_public_key" > authorized_keys
 </pre>
 
 # Build an user with speceified uid and gid
