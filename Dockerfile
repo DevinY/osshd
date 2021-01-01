@@ -20,6 +20,7 @@ RUN mkdir /var/run/sshd
 
 RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
+    sed -ri 's/AllowTcpForwarding no/AllowTcpForwarding yes/g' /etc/ssh/sshd_config && \
     sed -ri 's/#AuthorizedKeysFile/AuthorizedKeysFile/g' /etc/ssh/sshd_config && \
     sed -ri 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
 
@@ -38,7 +39,7 @@ COPY authorized_keys /home/${OSSH_USER}/.ssh/authorized_keys
 
 USER root
 
-RUN chown ${OSSH_UID}.${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
+RUN chown ${OSSH_UID}.${OSSH_GID} -R /home/${OSSH_USER}&&chmod 700 /home/${OSSH_USER}
 
 RUN apk del pwgen
 
