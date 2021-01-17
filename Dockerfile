@@ -19,6 +19,9 @@ RUN apk update&&apk add openssh git pwgen rsync
 RUN mkdir /var/run/sshd
 
 RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -ri 's/#SyslogFacility AUTH/SyslogFacility AUTH/g' /etc/ssh/sshd_config && \
+    sed -ri 's/#LogLevel INFO/LogLevel INFO/g' /etc/ssh/sshd_config && \
+    sed -ri 's/#StrictModes yes/StrictModes no/g' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
     sed -ri 's/AllowTcpForwarding no/AllowTcpForwarding yes/g' /etc/ssh/sshd_config && \
     sed -ri 's/GatewayPorts no/GatewayPorts yes/g' /etc/ssh/sshd_config && \
@@ -46,4 +49,4 @@ RUN apk del pwgen
 
 EXPOSE 22
 
-CMD    ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-D","-e"]
