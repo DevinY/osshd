@@ -14,17 +14,16 @@ ARG gid
 
 ENV OSSH_GID ${gid:-1000}
 
-RUN apk update&&apk add openssh git pwgen rsync
+ARG shell
+
+ENV OSSH_SHELL ${shell:-/bin/sh}
+
+RUN apk update&&apk add openssh git pwgen rsync bash
 
 RUN mkdir /var/run/sshd
 
 RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -ri 's/#SyslogFacility AUTH/SyslogFacility AUTH/g' /etc/ssh/sshd_config && \
-    sed -ri 's/#LogLevel INFO/LogLevel INFO/g' /etc/ssh/sshd_config && \
-    sed -ri 's/#StrictModes yes/StrictModes no/g' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && \
-    sed -ri 's/AllowTcpForwarding no/AllowTcpForwarding yes/g' /etc/ssh/sshd_config && \
-    sed -ri 's/GatewayPorts no/GatewayPorts yes/g' /etc/ssh/sshd_config && \
     sed -ri 's/#AuthorizedKeysFile/AuthorizedKeysFile/g' /etc/ssh/sshd_config && \
     sed -ri 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
 
@@ -35,18 +34,20 @@ RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa &&\
     ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
 
-RUN adduser -D -u ${OSSH_UID} -g ${OSSH_GID} -s /bin/sh -h /home/${OSSH_USER} ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd > /dev/null 2>&1
+RUN adduser -D -u ${OSSH_UID} -g ${OSSH_GID} -s ${OSSH_SHELL} -h /home/${OSSH_USER} ${OSSH_USER};echo "${OSSH_USER}:`pwgen`" |chpasswd > /dev/null 2>&1
 
 USER ${OSSH_USER}
+
+ADD motd /etc/motd
 
 COPY authorized_keys /home/${OSSH_USER}/.ssh/authorized_keys
 
 USER root
 
-RUN chown ${OSSH_UID}.${OSSH_GID} -R /home/${OSSH_USER}&&chmod 700 /home/${OSSH_USER}
+RUN chown ${OSSH_UID}.${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
 
 RUN apk del pwgen
 
 EXPOSE 22
 
-CMD ["/usr/sbin/sshd", "-D","-e"]
+CMD    ["/usr/sbin/sshd", "-D"]

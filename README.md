@@ -11,7 +11,7 @@ Build OpenSSH image to only with a public key authentication.
 # Setup up auhtorzied_keys (option)
 You can setup authorized_keys before build an image.
 
-# default user is git.
+# default user is git and uid is 1000.
 docker build -t ossh . 
 
 # Create container with specified port.
@@ -24,12 +24,27 @@ cd ~/.ssh
 echo "your_open_ssh_public_key" > authorized_keys
 </pre>
 
-# Build an user with speceified uid and gid
+# Build an user with speceified uid, gid and name
 <pre>
 docker build \
 --build-arg uid=48 \
 --build-arg gid=48 \
 --build-arg user=apach \
 -t ossh48 \
+.
+</pre>
+
+# build ossh image for current user 
+# step1 cat your public key to authorized_keys file.
+<pre>
+    cat ~/.ssh/id_ed25519.pub > authorized_keys
+</pre>
+# step2 build ossh image for current user with your key.
+<pre>
+docker build \
+--build-arg uid=$(id -u) \
+--build-arg gid=$(id -g) \
+--build-arg user=$USER \
+-t ossh \
 .
 </pre>
