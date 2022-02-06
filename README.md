@@ -48,3 +48,19 @@ docker build \
 -t ossh \
 .
 </pre>
+
+Or, You can build specified docker file as below command. (this one can run VS Code with Remote - SSH)
+<pre>
+docker build \
+--build-arg uid=1000 \
+--build-arg gid=1000 \
+--build-arg user=dlaravel \
+-t ossh \
+-f Dockerfile-ubuntu \
+.
+</pre>
+
+# step 3 create container and mount volume where you want to access.
+<pre>
+docker run --name ossh -v $(pwd):/var/www/html -dp 2222:22 ossh
+</pre>
