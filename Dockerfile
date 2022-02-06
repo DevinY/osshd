@@ -42,9 +42,12 @@ ADD motd /etc/motd
 
 COPY authorized_keys /home/${OSSH_USER}/.ssh/authorized_keys
 
+
 USER root
 
-RUN chown ${OSSH_UID}.${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
+RUN chmod 600 /home/${OSSH_USER}/.ssh/authorized_keys
+
+RUN chown ${OSSH_UID}:${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
 
 RUN apk del pwgen
 

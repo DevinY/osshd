@@ -1,4 +1,4 @@
-FROM ubuntu:12.04
+FROM ubuntu
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -14,7 +14,7 @@ ARG gid
 
 ENV OSSH_GID ${gid:-1000}
 
-RUN apt-get update&&apt-get install -y openssh-server git pwgen
+RUN apt-get update&&apt-get install -y openssh-server git pwgen vim php
 
 
 RUN mkdir /var/run/sshd
@@ -37,7 +37,7 @@ COPY authorized_keys /home/${OSSH_USER}/.ssh/authorized_keys
 
 USER root
 
-RUN chown ${OSSH_UID}.${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
+RUN chown ${OSSH_UID}:${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
 
 RUN apt-get -y --purge remove pwgen
 
