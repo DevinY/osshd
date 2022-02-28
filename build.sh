@@ -4,6 +4,6 @@ docker build \
 --build-arg uid=1000 \
 --build-arg gid=1000 \
 --build-arg user=dlaravel \
--t ossh \
+-t osshd \
 -f Dockerfile-ubuntu \
 .

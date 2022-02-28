@@ -14,8 +14,9 @@ ARG gid
 
 ENV OSSH_GID ${gid:-1000}
 
-RUN apt-get update&&apt-get install -y openssh-server git pwgen vim php
+RUN apt-get update&&apt-get install -y openssh-server git rsync locales pwgen vim php
 
+RUN locale-gen zh_TW.UTF-8
 
 RUN mkdir /var/run/sshd
 RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
