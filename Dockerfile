@@ -47,7 +47,11 @@ USER root
 
 RUN chmod 600 /home/${OSSH_USER}/.ssh/authorized_keys
 
+RUN chmod 700 /home/${OSSH_USER}/.ssh
+
 RUN chown ${OSSH_UID}:${OSSH_GID} /home/${OSSH_USER}/.ssh/authorized_keys&&chmod 700 /home/${OSSH_USER}
+
+RUN chown ${OSSH_UID}:${OSSH_GID} /home/${OSSH_USER} -R
 
 RUN apk del pwgen
 
