@@ -8,7 +8,7 @@ ENV GROUP_ID ${GROUP_ID:-1000}
 USER root
 
 RUN apt-get -y update
-RUN apt-get install -y locales redis-tools openssh-server git pwgen
+RUN apt-get install -y locales redis-tools openssh-server git rsync pwgen
 RUN mkdir -p /var/run/sshd /home/dlaravel/.ssh
 
 RUN touch /home/dlaravel/.ssh/authorized_keys
@@ -38,16 +38,6 @@ RUN echo "Asia/Taipei" > /etc/timezone && \
 RUN ssh-keygen -A
 
 RUN echo "ExposeAuthInfo yes" >> /etc/ssh/sshd_config
-
-#Download LTS VERSION
-RUN export NODE_VERSION=$(curl -s https://nodejs.org/download/release/latest-v18.x/SHASUMS256.txt|grep linux-arm64.tar.xz|awk '{print $2}'|sed 's/-linux-arm64.tar.xz//g') && \
-    wget https://nodejs.org/download/release/latest-v18.x/${NODE_VERSION}-linux-arm64.tar.xz && \
-    tar -xJf ${NODE_VERSION}-linux-arm64.tar.xz && \
-	rm ${NODE_VERSION}-linux-arm64.tar.xz && \
-	mv ${NODE_VERSION}-linux-arm64 /usr/local/node && \
-	echo 'export PATH=/usr/local/node/bin:$PATH' >> /etc/bash.bashrc && \
-    export PATH=/usr/local/node/bin:$PATH && \
-    npm install -g npm@latest
 
 # Link /var/www/html to home director
 RUN ln -s /var/www/html /home/dlaravel/html
