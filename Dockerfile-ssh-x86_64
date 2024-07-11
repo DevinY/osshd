@@ -8,7 +8,7 @@ ENV GROUP_ID ${GROUP_ID:-1000}
 USER root
 
 RUN apt-get -y update
-RUN apt-get install -y locales redis-tools openssh-server git pwgen
+RUN apt-get install -y locales redis-tools openssh-server git rsync pwgen
 RUN mkdir -p /var/run/sshd /home/dlaravel/.ssh
 
 RUN touch /home/dlaravel/.ssh/authorized_keys
