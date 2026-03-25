@@ -40,9 +40,7 @@ RUN export NODE_VERSION=$(curl -sL https://nodejs.org/download/release/latest-v2
     wget https://nodejs.org/download/release/latest-v22.x/${NODE_VERSION}-linux-x64.tar.xz && \
     tar -xJf ${NODE_VERSION}-linux-x64.tar.xz -C /usr/local --strip-components=1 && \
     rm ${NODE_VERSION}-linux-x64.tar.xz && \
-    ln -s /usr/local/bin/node /usr/bin/node
-
-RUN npm install -g npm@latest
+    ln -sf /usr/local/bin/node /usr/bin/node
 
 RUN ssh-keygen -A
 
