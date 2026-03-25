@@ -36,14 +36,13 @@ RUN echo "Asia/Taipei" > /etc/timezone && \
     update-locale LANG=zh_TW.UTF-8
 
 #Download LTS VERSION
-RUN export NODE_VERSION=$(curl -sL https://nodejs.org/download/release/latest-v22.x/SHASUMS256.txt|grep linux-x64.tar.xz|awk '{print $2}'|sed 's/-linux-x64.tar.xz//g') && \
-      wget https://nodejs.org/download/release/latest-v22.x/${NODE_VERSION}-linux-x64.tar.xz && \
-      tar -xJf ${NODE_VERSION}-linux-x64.tar.xz && \
-      rm ${NODE_VERSION}-linux-x64.tar.xz && \
-      mv ${NODE_VERSION}-linux-x64 /usr/local/node && \
-      echo 'export PATH=/usr/local/node/bin:$PATH' >> /etc/bash.bashrc && \
-      export PATH=/usr/local/node/bin:$PATH && \
-      npm install -g npm@latest
+RUN export NODE_VERSION=$(curl -sL https://nodejs.org/download/release/latest-v22.x/SHASUMS256.txt | grep linux-x64.tar.xz | awk '{print $2}' | sed 's/-linux-x64.tar.xz//g') && \
+    wget https://nodejs.org/download/release/latest-v22.x/${NODE_VERSION}-linux-x64.tar.xz && \
+    tar -xJf ${NODE_VERSION}-linux-x64.tar.xz -C /usr/local --strip-components=1 && \
+    rm ${NODE_VERSION}-linux-x64.tar.xz && \
+    ln -s /usr/local/bin/node /usr/bin/node
+
+RUN npm install -g npm@latest
 
 RUN ssh-keygen -A
 
